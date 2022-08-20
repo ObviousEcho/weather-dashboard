@@ -1,4 +1,12 @@
 
 header {
     text-align: center;
+    background-image: linear-gradient(to top right, rgb(10, 119, 201), rgb(3, 53, 92));
 }
+
+.heading {
+    color: whitesmoke;
+    padding: 10px 0;
+}
+
+
