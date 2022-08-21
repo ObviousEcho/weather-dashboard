@@ -9,4 +9,6 @@ header {
     padding: 10px 0;
 }
 
-
+#search-input {
+    border-bottom: solid 2px rgb(108, 117, 125);
+}

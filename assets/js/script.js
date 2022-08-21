@@ -4,6 +4,7 @@ var submitForm = document.getElementById("search-input");
 var searchHistory = [];
 
 getLocalStorage();
+appendHistory();
 
 // write a function to make an API call for a specific city, which returns data
 // function should submit city input from form into API endpoint
@@ -30,7 +31,7 @@ function getApi(event) {
       console.log(responseData);
       sendToLocalStorage(responseData);
     });
-    inputField.value = "";
+  inputField.value = "";
 }
 
 // write a function which dislpays current conditoins for that city
@@ -48,9 +49,9 @@ function getApi(event) {
 // write function which accesses local storage if it exists
 // ===========================================================================
 function getLocalStorage() {
-  history = JSON.parse(localStorage.getItem("searchHistory"));
+  var history = JSON.parse(localStorage.getItem("searchHistory"));
   if (history !== null) {
-    searchHistory === history;
+    searchHistory = history;
     console.log(searchHistory);
   }
 }
@@ -74,6 +75,20 @@ function sendToLocalStorage(arr) {
 
 // write function which dynamically displays search history
 // ===========================================================================
+function appendHistory() {
+  var ul = document.getElementById("list");
+  if (searchHistory !== null) {
+    for (i = 0; i < searchHistory.length; i++) {
+      var listItem = document.createElement("button");
+      listItem.textContent = searchHistory[i].city;
+      listItem.setAttribute("type", "button");
+      listItem.setAttribute("class", "btn btn-secondary my-2");
+      listItem.setAttribute("id", `button-${[i]}`);
+      ul.appendChild(listItem);
+    }
+    console.log(ul.childNodes[1]);
+  }
+}
 
 // create event delegation listener for search history button which displays
 // forcast for clicked city
@@ -81,4 +96,3 @@ function sendToLocalStorage(arr) {
 // create an event listener for submit button
 // ===========================================================================
 submitForm.addEventListener("submit", getApi);
-
