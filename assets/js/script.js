@@ -2,6 +2,7 @@
 var apiKey = "842e73dda78b17a825098fd7bd7e267e";
 var submitForm = document.getElementById("search-input");
 var searchHistory = [];
+var ul = document.getElementById("list");
 
 getLocalStorage();
 appendHistory();
@@ -30,8 +31,19 @@ function getApi(event) {
       responseData.push(data);
       console.log(responseData);
       sendToLocalStorage(responseData);
+      deleteThenAppendHistory(responseData);
     });
   inputField.value = "";
+}
+
+// write a function which removes child nodes from history list, and then
+// calls function to append local storage to history list
+// this prevents prevents history list from double appending
+function deleteThenAppendHistory(arr) {
+  while (ul.hasChildNodes()) {
+    ul.removeChild(ul.firstChild);
+  }
+  appendHistory();
 }
 
 // write a function which dislpays current conditoins for that city
@@ -76,17 +88,15 @@ function sendToLocalStorage(arr) {
 // write function which dynamically displays search history
 // ===========================================================================
 function appendHistory() {
-  var ul = document.getElementById("list");
   if (searchHistory !== null) {
     for (i = 0; i < searchHistory.length; i++) {
-      var listItem = document.createElement("button");
-      listItem.textContent = searchHistory[i].city;
-      listItem.setAttribute("type", "button");
-      listItem.setAttribute("class", "btn btn-secondary my-2");
-      listItem.setAttribute("id", `button-${[i]}`);
-      ul.appendChild(listItem);
+        var listItem = document.createElement("button");
+        listItem.textContent = searchHistory[i].city;
+        listItem.setAttribute("type", "button");
+        listItem.setAttribute("class", "btn btn-secondary my-2");
+        listItem.setAttribute("id", `button-${[i]}`);
+        ul.appendChild(listItem);
     }
-    console.log(ul.childNodes[1]);
   }
 }
 
