@@ -19,7 +19,7 @@ function getApi(event) {
   var requestUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     cityInput +
-    "&appid=" +
+    "&cnt=40&appid=" +
     apiKey +
     "&units=imperial";
 
@@ -52,6 +52,8 @@ function deleteThenAppendHistory(arr) {
 // ===========================================================================
 function createCurrentCard(city, date, icon, temp, wind, humid) {
   var dashboard = document.getElementById("dashboard");
+  var iconImg = document.createElement("img");
+  var span = document.createElement("span");
   var cityName = document.createElement("h2");
   var temperature = document.createElement("p");
   var windSpeed = document.createElement("p");
@@ -61,19 +63,31 @@ function createCurrentCard(city, date, icon, temp, wind, humid) {
   var dateObject = new Date(miliseconds);
   var formattedDate = dateObject.toLocaleDateString();
 
-  dashboard.style.border = "solid black 2px"
+  var iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
 
-  cityName.textContent = city + " (" + formattedDate + ") " + icon;
-  temperature.textContent = "Temp: " + temp;
-  windSpeed.textContent = "Wind: " + wind;
-  humidity.textContent = "Humidity: " + humid;
+  dashboard.style.border = "solid black 2px";
+
+  if (dashboard !== null) {
+    while (dashboard.hasChildNodes()) {
+      dashboard.removeChild(dashboard.firstChild);
+    }
+  }
+
+  iconImg.setAttribute("src", iconUrl);
+  span.appendChild(iconImg);
+
+  cityName.textContent = city + " (" + formattedDate + ") ";
+  cityName.appendChild(span);
+  // include unicode character for degree symbol
+  temperature.textContent = "Temp: " + temp + "\u00B0 F";
+  windSpeed.textContent = "Wind: " + wind + " MPH";
+  humidity.textContent = "Humidity: " + humid + "%";
 
   dashboard.appendChild(cityName);
   dashboard.appendChild(temperature);
   dashboard.appendChild(windSpeed);
   dashboard.appendChild(humidity);
 }
-
 
 // write function which dynamically displays the 5 day forcast, date, an icon,
 // temp, wind speed, and humidity
@@ -86,19 +100,18 @@ function appendCityToCurrent(event) {
   var btnText = btnClicked.textContent;
   console.log(btnText);
   console.log(searchHistory);
-  for(i = 0; i < searchHistory.length; i++) {
+  for (i = 0; i < searchHistory.length; i++) {
     var city = searchHistory[i].city;
     var date = searchHistory[i].date;
     var icon = searchHistory[i].icon;
     var temp = searchHistory[i].temp;
     var wind = searchHistory[i].wind;
     var humid = searchHistory[i].humidity;
-    if(btnText === city) {
+    if (btnText === city) {
       createCurrentCard(city, date, icon, temp, wind, humid);
-    } 
+    }
   }
 }
-
 
 // write function which accesses local storage if it exists
 // ===========================================================================
@@ -131,19 +144,19 @@ function sendToLocalStorage(arr) {
 function appendHistory() {
   if (searchHistory !== null) {
     for (i = 0; i < searchHistory.length; i++) {
-        var listItem = document.createElement("button");
-        listItem.textContent = searchHistory[i].city;
-        listItem.setAttribute("type", "button");
-        listItem.setAttribute("class", "btn btn-secondary my-2");
-        listItem.setAttribute("id", `button-${[i]}`);
-        ul.appendChild(listItem);
+      var listItem = document.createElement("button");
+      listItem.textContent = searchHistory[i].city;
+      listItem.setAttribute("type", "button");
+      listItem.setAttribute("class", "btn btn-secondary my-2");
+      listItem.setAttribute("id", `button-${[i]}`);
+      ul.appendChild(listItem);
     }
   }
 }
 
 // create event delegation listener for search history button which displays
 // forcast for clicked city
-ul.addEventListener("click", appendCityToCurrent)
+ul.addEventListener("click", appendCityToCurrent);
 
 // create an event listener for submit button
 // ===========================================================================

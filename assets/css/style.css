@@ -12,3 +12,8 @@ header {
 #search-input {
     border-bottom: solid 2px rgb(108, 117, 125);
 }
+
+#dashboard p {
+    font-size: 20px;
+    font-weight: 500;
+}
