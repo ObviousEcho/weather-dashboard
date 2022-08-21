@@ -2,6 +2,7 @@
 var apiKey = "842e73dda78b17a825098fd7bd7e267e";
 var submitForm = document.getElementById("search-input");
 var searchHistory = [];
+var forecastData = [];
 var ul = document.getElementById("list");
 
 getLocalStorage();
@@ -19,7 +20,7 @@ function getApi(event) {
   var requestUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     cityInput +
-    "&cnt=40&appid=" +
+    "&appid=" +
     apiKey +
     "&units=imperial";
 
@@ -32,8 +33,39 @@ function getApi(event) {
       console.log(responseData);
       sendToLocalStorage(responseData);
       deleteThenAppendHistory(responseData);
+
+      var city = responseData[0].name;
+      var date = responseData[0].dt;
+      var icon = responseData[0].weather[0].icon;
+      var temp = responseData[0].main.temp;
+      var wind = responseData[0].wind.speed;
+      var humid = responseData[0].main.humidity;
+
+      createCurrentCard(city, date, icon, temp, wind, humid);
     });
+  fiveDayForecast(cityInput);
   inputField.value = "";
+}
+
+// write a function witch fetches forecast data for search city
+function fiveDayForecast(city) {
+  var forecastUrl =
+    "https://api.openweathermap.org/data/2.5/forecast?q=" +
+    city +
+    "&appid=" +
+    apiKey +
+    "&units=imperial";
+
+  fetch(forecastUrl)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      // forecastData.push(data.list);
+      forecastData = data.list;
+      console.log(forecastData);
+      fiveDayAppend(forecastData);
+    });
 }
 
 // write a function which removes child nodes from history list, and then
@@ -92,6 +124,42 @@ function createCurrentCard(city, date, icon, temp, wind, humid) {
 // write function which dynamically displays the 5 day forcast, date, an icon,
 // temp, wind speed, and humidity
 // ===========================================================================
+function fiveDayAppend(data) {
+  console.log(data);
+  var fiveDayArray = [];
+  for (i = 0; i < data.length; i++) {
+    // console.log(data[i]);
+
+    var miliseconds = data[i].dt * 1000;
+    var dateObject = new Date(miliseconds);
+    var formattedDate = dateObject.toLocaleDateString();
+    console.log(formattedDate);
+    var icon = data[i].weather[0].icon;
+    var temperature = data[i].main.temp;
+    var wind = data[i].wind.speed;
+    var humid = data[i].main.humidity;
+
+    var forecast = {
+      date: formattedDate,
+      icon: icon,
+      temp: temperature,
+      wind: wind,
+      humidity: humid,
+    };
+
+    fiveDayArray.push(forecast);
+  }
+  console.log(fiveDayArray);
+  var removeValFromIndex = [
+    1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23,
+    25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39,
+  ];
+
+  for (var i of removeValFromIndex.reverse()) {
+    fiveDayArray.splice(i, 1);
+  }
+  console.log(fiveDayArray);
+}
 
 // write function which displays current and 5 day forcast for cities from search history
 // ===========================================================================
