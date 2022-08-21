@@ -1,6 +1,9 @@
 // global var's
 var apiKey = "842e73dda78b17a825098fd7bd7e267e";
 var submitForm = document.getElementById("search-input");
+var searchHistory = [];
+
+getLocalStorage();
 
 // write a function to make an API call for a specific city, which returns data
 // function should submit city input from form into API endpoint
@@ -8,21 +11,26 @@ var submitForm = document.getElementById("search-input");
 // ===========================================================================
 function getApi(event) {
   event.preventDefault();
-  var cityInput = document.getElementById("input-field").value;
-  console.log(cityInput);
+  var responseData = [];
+  var inputField = document.getElementById("input-field");
+  var cityInput = inputField.value;
   var requestUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
     cityInput +
     "&appid=" +
-    apiKey;
+    apiKey +
+    "&units=imperial";
 
   fetch(requestUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-      console.log(data);
+      responseData.push(data);
+      console.log(responseData);
+      sendToLocalStorage(responseData);
     });
+    inputField.value = "";
 }
 
 // write a function which dislpays current conditoins for that city
@@ -37,10 +45,40 @@ function getApi(event) {
 // write function which displays current and 5 day forcast for cities from search history
 // ===========================================================================
 
+// write function which accesses local storage if it exists
+// ===========================================================================
+function getLocalStorage() {
+  history = JSON.parse(localStorage.getItem("searchHistory"));
+  if (history !== null) {
+    searchHistory === history;
+    console.log(searchHistory);
+  }
+}
+
+// write function which stores search history to local storage
+// ===========================================================================
+function sendToLocalStorage(arr) {
+  var obj = arr[0];
+  var cityData = {
+    city: obj.name,
+    date: obj.dt,
+    icon: obj.weather[0].icon,
+    temp: obj.main.temp,
+    humidity: obj.main.humidity,
+    wind: obj.wind.speed,
+    // uv: uv
+  };
+  searchHistory.push(cityData);
+  localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+}
+
 // write function which dynamically displays search history
 // ===========================================================================
 
+// create event delegation listener for search history button which displays
+// forcast for clicked city
+
 // create an event listener for submit button
 // ===========================================================================
-
 submitForm.addEventListener("submit", getApi);
+
