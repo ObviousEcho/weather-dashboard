@@ -50,6 +50,30 @@ function deleteThenAppendHistory(arr) {
 // dynamically display city name, date, an icon, temp, humidity, wind and uv index
 // uv index to be color coded
 // ===========================================================================
+function createCurrentCard(city, date, icon, temp, wind, humid) {
+  var dashboard = document.getElementById("dashboard");
+  var cityName = document.createElement("h2");
+  var temperature = document.createElement("p");
+  var windSpeed = document.createElement("p");
+  var humidity = document.createElement("p");
+
+  var miliseconds = date * 1000;
+  var dateObject = new Date(miliseconds);
+  var formattedDate = dateObject.toLocaleDateString();
+
+  dashboard.style.border = "solid black 2px"
+
+  cityName.textContent = city + " (" + formattedDate + ") " + icon;
+  temperature.textContent = "Temp: " + temp;
+  windSpeed.textContent = "Wind: " + wind;
+  humidity.textContent = "Humidity: " + humid;
+
+  dashboard.appendChild(cityName);
+  dashboard.appendChild(temperature);
+  dashboard.appendChild(windSpeed);
+  dashboard.appendChild(humidity);
+}
+
 
 // write function which dynamically displays the 5 day forcast, date, an icon,
 // temp, wind speed, and humidity
@@ -57,6 +81,24 @@ function deleteThenAppendHistory(arr) {
 
 // write function which displays current and 5 day forcast for cities from search history
 // ===========================================================================
+function appendCityToCurrent(event) {
+  var btnClicked = event.target;
+  var btnText = btnClicked.textContent;
+  console.log(btnText);
+  console.log(searchHistory);
+  for(i = 0; i < searchHistory.length; i++) {
+    var city = searchHistory[i].city;
+    var date = searchHistory[i].date;
+    var icon = searchHistory[i].icon;
+    var temp = searchHistory[i].temp;
+    var wind = searchHistory[i].wind;
+    var humid = searchHistory[i].humidity;
+    if(btnText === city) {
+      createCurrentCard(city, date, icon, temp, wind, humid);
+    } 
+  }
+}
+
 
 // write function which accesses local storage if it exists
 // ===========================================================================
@@ -64,7 +106,6 @@ function getLocalStorage() {
   var history = JSON.parse(localStorage.getItem("searchHistory"));
   if (history !== null) {
     searchHistory = history;
-    console.log(searchHistory);
   }
 }
 
@@ -102,6 +143,7 @@ function appendHistory() {
 
 // create event delegation listener for search history button which displays
 // forcast for clicked city
+ul.addEventListener("click", appendCityToCurrent)
 
 // create an event listener for submit button
 // ===========================================================================
