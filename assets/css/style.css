@@ -17,3 +17,8 @@ header {
     font-size: 20px;
     font-weight: 500;
 }
+
+.forecast-box {
+    background-color: rgb(3, 53, 92);
+    color: whitesmoke;
+}

@@ -30,7 +30,6 @@ function getApi(event) {
     })
     .then(function (data) {
       responseData.push(data);
-      console.log(responseData);
       sendToLocalStorage(responseData);
       deleteThenAppendHistory(responseData);
 
@@ -63,7 +62,6 @@ function fiveDayForecast(city) {
     .then(function (data) {
       // forecastData.push(data.list);
       forecastData = data.list;
-      console.log(forecastData);
       fiveDayAppend(forecastData);
     });
 }
@@ -125,7 +123,6 @@ function createCurrentCard(city, date, icon, temp, wind, humid) {
 // temp, wind speed, and humidity
 // ===========================================================================
 function fiveDayAppend(data) {
-  console.log(data);
   var fiveDayArray = [];
   for (i = 0; i < data.length; i++) {
     // console.log(data[i]);
@@ -133,7 +130,6 @@ function fiveDayAppend(data) {
     var miliseconds = data[i].dt * 1000;
     var dateObject = new Date(miliseconds);
     var formattedDate = dateObject.toLocaleDateString();
-    console.log(formattedDate);
     var icon = data[i].weather[0].icon;
     var temperature = data[i].main.temp;
     var wind = data[i].wind.speed;
@@ -149,7 +145,6 @@ function fiveDayAppend(data) {
 
     fiveDayArray.push(forecast);
   }
-  console.log(fiveDayArray);
   var removeValFromIndex = [
     1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23,
     25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39,
@@ -158,10 +153,47 @@ function fiveDayAppend(data) {
   for (var i of removeValFromIndex.reverse()) {
     fiveDayArray.splice(i, 1);
   }
-  console.log(fiveDayArray);
+  fiveDayToDOM(fiveDayArray);
 }
 
-// write function which displays current and 5 day forcast for cities from search history
+// write function which appends 5 day forecast data to DOM
+function fiveDayToDOM(data) {
+  var fiveDayDiv = document.getElementById("five-day");
+  console.log(data);
+
+  if (fiveDayDiv !== null) {
+    while (fiveDayDiv.hasChildNodes()) {
+      fiveDayDiv.removeChild(fiveDayDiv.firstChild);
+    }
+  }
+
+  for (i = 0; i < data.length; i++) {
+    var iconUrl = "http://openweathermap.org/img/w/" + data[i].icon + ".png";
+    var div = document.createElement("div");
+    var date = document.createElement("h4");
+    var icon = document.createElement("img");
+    var temp = document.createElement("p");
+    var wind = document.createElement("p");
+    var humid = document.createElement("p");
+
+    div.setAttribute("class", "forecast-box p-3");
+
+    date.textContent = data[i].date;
+    icon.setAttribute("src", iconUrl);
+    temp.textContent = "Temp: " + data[i].temp + "\u00B0 F";
+    wind.textContent = "Wind: " + data[i].wind + " MPH";
+    humid.textContent = "Humidity: " + data[i].humidity + " %";
+
+    div.appendChild(date);
+    div.appendChild(icon);
+    div.appendChild(temp);
+    div.appendChild(wind);
+    div.appendChild(humid);
+    fiveDayDiv.appendChild(div);
+  }
+}
+
+// write function which displays current forcast for cities from search history
 // ===========================================================================
 function appendCityToCurrent(event) {
   var btnClicked = event.target;
@@ -179,6 +211,7 @@ function appendCityToCurrent(event) {
       createCurrentCard(city, date, icon, temp, wind, humid);
     }
   }
+  fiveDayForecast(btnText);
 }
 
 // write function which accesses local storage if it exists
