@@ -1,5 +1,6 @@
 // global var's
 var apiKey = "842e73dda78b17a825098fd7bd7e267e";
+var redirectUrl = "./404.html";
 var submitForm = document.getElementById("search-input");
 var searchHistory = [];
 var forecastData = [];
@@ -26,7 +27,11 @@ function getApi(event) {
 
   fetch(requestUrl)
     .then(function (response) {
-      return response.json();
+      if (response.status !== 200) {
+        document.location.replace(redirectUrl);
+      } else {
+        return response.json();
+      }
     })
     .then(function (data) {
       responseData.push(data);
@@ -57,7 +62,11 @@ function fiveDayForecast(city) {
 
   fetch(forecastUrl)
     .then(function (response) {
-      return response.json();
+      if (response.status !== 200) {
+        document.location.replace(redirectUrl);
+      } else {
+        return response.json();
+      }
     })
     .then(function (data) {
       // forecastData.push(data.list);
